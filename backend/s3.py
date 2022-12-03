@@ -3,7 +3,7 @@ import boto3
 from botocore.exceptions import ClientError
 from config import *
 
-def create_presigned_url(object_name,bucket_name="rcts-audio-data-ncert",  expiration=3600):
+def create_presigned_url(object_name,bucket_name="rcts-audio-data-ncert",  expiration=1000):
     """Generate a presigned URL to share an S3 object
 
     :param bucket_name: string

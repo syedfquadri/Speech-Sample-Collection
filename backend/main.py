@@ -14,7 +14,9 @@ from uuid import uuid4
 app = FastAPI()
 
 origins = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "speech-recorder.rcts.iiit.ac.in",
+    "http://speech-recorder.rcts.iiit.ac.in.s3-website.ap-south-1.amazonaws.com/",
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -23,14 +25,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
-# upload prompts
-# download (json)
-# get prompt
-# upload audio
+
 
 app.add_event_handler('startup', connect_to_mongo)
 app.add_event_handler('shutdown', close_mongo_connection)
-
 
 @app.get("/get_prompt")
 async def get_prompt():
@@ -39,22 +37,23 @@ async def get_prompt():
     async for doc in cursor:
         res = json.loads(json_util.dumps(doc))
     return res
+
 @app.get("/presigned_s3_post/{id}")
 async def presigned_s3_post(id):
     # gets a presigned url (put) from s3.py and send it to client
     return create_presigned_url(id)
 
-@app.post("/upload_audio_url/{id}")
-async def upload_audio_url(id):
+@app.post("/insert_audio_url/{item_id}")
+async def insert_audio_url(item_id:str, s3url:AudioURLs):
     # append the audio_url, takes in the ID and Audio_URL (S3)
-    return 1
+    update = {**s3url.dict(),"timestamp":datetime.now()}
+    get_db()['TextAudio'].update_one({"id":item_id},{'$push':{"audio_url":[update]}})
 
 def save_to_db(item: Item):
 	"""
 	saves the items to mongo db
 	returns: None
 	"""
-	# await get_db()['questions'].insert_one(question.dict())
 	get_db()['TextAudio'].insert_one(item)
 
 def db_populate(f, db:AsyncIOMotorClient=Depends(get_database)):

@@ -14,9 +14,10 @@ export const Prompt = () => {
     }
     useEffect(()=>{
         const fetchData = async () => {
-            await axios.get("http://localhost:8000/get_prompt")
+            await axios.get("http://43.205.226.35:8000/get_prompt")
             .then((res) => {
                 setData(res.data)
+                setS3url({})
             }).catch(err =>{
                     console.log(err)
                 })
@@ -25,7 +26,7 @@ export const Prompt = () => {
         },[])
     useEffect(()=>{
         const getPresignedURL = async () => {
-            await axios.get(`http://localhost:8000/presigned_s3_post/${data.id}`)
+            await axios.get(`http://43.205.226.35:8000/presigned_s3_post/${data.id}`)
             .then((res)=>{
                 setS3url(res.data)
             }).catch((err)=>{console.log(err)})
@@ -40,7 +41,7 @@ export const Prompt = () => {
                 <h2>{data.prompt}</h2>
             </Typography>
         </Paper>
-        <Recorder s3url={s3url} handleRefresh={handleRefresh}/>
+        <Recorder s3url={s3url} id={data.id} handleRefresh={handleRefresh}/>
     </div>
   )
 }

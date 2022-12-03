@@ -1,11 +1,11 @@
 from datetime import datetime
 from pydantic import BaseModel
-from typing import List
+from typing import List, Union
 
 
 class AudioURLs(BaseModel):
-    url: str = None
-    timestamp: datetime
+    url: str
+    timestamp: Union[datetime, None] = None
 
 class Item(BaseModel):
     id : str
