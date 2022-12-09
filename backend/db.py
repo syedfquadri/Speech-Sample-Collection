@@ -15,12 +15,12 @@ def get_db():
 
 async def connect_to_mongo():
 	print('Connecting to database...')
-	db.client = AsyncIOMotorClient(
-                f'mongodb+srv://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_ENDPOINT}/{MONGO_DB_NAME}?retryWrites=true&w=majority'
-        )
 	# db.client = AsyncIOMotorClient(
-    #             f'mongodb://localhost:27017/AA_ASR'
+    #             f'mongodb+srv://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_ENDPOINT}/{MONGO_DB_NAME}?retryWrites=true&w=majority'
     #     )
+	db.client = AsyncIOMotorClient(
+                f'mongodb://localhost:27017/AA_ASR'
+        )
 
 	print('Connected!')
 

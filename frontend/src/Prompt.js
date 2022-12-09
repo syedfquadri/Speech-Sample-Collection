@@ -41,7 +41,7 @@ export const Prompt = () => {
                 <h2>{data.prompt}</h2>
             </Typography>
         </Paper>
-        <Recorder s3url={s3url} id={data.id} handleRefresh={handleRefresh}/>
+        <Recorder s3url={s3url} id={data.id} handleRefresh={()=>{handleRefresh()}}/>
     </div>
   )
 }

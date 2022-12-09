@@ -11,4 +11,5 @@ class Item(BaseModel):
     id : str
     prompt: str
     prompt_timestamp: datetime
+    data_type: str
     audio_url: List[AudioURLs] = []

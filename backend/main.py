@@ -11,11 +11,11 @@ from db import get_db, get_database
 from fastapi.middleware.cors import CORSMiddleware
 from s3 import create_presigned_url
 from uuid import uuid4
+
 app = FastAPI()
 
 origins = [
     "http://localhost:3000",
-    "speech-recorder.rcts.iiit.ac.in",
     "http://speech-recorder.rcts.iiit.ac.in.s3-website.ap-south-1.amazonaws.com/",
 ]
 app.add_middleware(
@@ -30,10 +30,19 @@ app.add_middleware(
 app.add_event_handler('startup', connect_to_mongo)
 app.add_event_handler('shutdown', close_mongo_connection)
 
+from enum import Enum
+
+
+class DataType_(str, Enum):
+    NCERT = 'NCERT'
+    SCERT = 'SCERT'
+    BANK = 'Bank'
+    GENERAL = "General"
+
 @app.get("/get_prompt")
 async def get_prompt():
     # Randomly get a prompt from the db with len(audio_url)<1
-    cursor  =  get_db()['TextAudio'].aggregate([ { '$sample': { 'size': 1 } }]) #aggregate([ { '$match': { 'audio_url': {'$size':{'$lt':LEN_AUDIO_URL}} } }, { '$sample': { 'size': 1 } }])
+    cursor  =  get_db()['TextAudio'].aggregate([ {'$match': { 'audio_url': {'$size':LEN_AUDIO_URL}}},{ '$sample': { 'size': 1 } }]) #aggregate([ { '$match': { 'audio_url': {'$size':{'$lt':LEN_AUDIO_URL}} } }, { '$sample': { 'size': 1 } }])
     async for doc in cursor:
         res = json.loads(json_util.dumps(doc))
     return res
@@ -56,20 +65,21 @@ def save_to_db(item: Item):
 	"""
 	get_db()['TextAudio'].insert_one(item)
 
-def db_populate(f, db:AsyncIOMotorClient=Depends(get_database)):
+def db_populate(f, dt,  db:AsyncIOMotorClient=Depends(get_database)):
     contents = f.decode('utf-8').split('\n')
     for i in range(len(contents)):
         item_out = Item(
             id=str(uuid4()),
             prompt= str(contents[i]),
+            data_type = str(dt.value),
             prompt_timestamp=datetime.now()
         )
         save_to_db(item_out.dict())
 
 @app.post('/file_upload')
-async def file_upload(file: UploadFile, bt:BackgroundTasks):
+async def file_upload(file: UploadFile, data_type: DataType_ , bt:BackgroundTasks):
     # append the audio_url, takes in the ID and Audio_URL (S3)
     # use bt to process and populate data
     f = await file.read()
-    bt.add_task(db_populate(f))
+    bt.add_task(db_populate(f, data_type))
     return {"message": f"{file.filename} sent for processing and DB upload"}

@@ -40,7 +40,7 @@ export default function Recorder(props) {
             }).catch((err)=>{console.log(err)})
         }
         UploadS3_db()
-    },[uploaded, props.id,props.s3url ])
+    },[uploaded ])
   return (
 
   <div style={{

@@ -4,6 +4,7 @@ import RCTS_logo from './rcts_logo.png'
 import IIIT_logo from './iiit_logo.png'
 import { Prompt } from './Prompt';
 import { Checkbox } from '@mui/material';
+import {Helmet} from "react-helmet";
 // import axios from 'axios';
 
 // axios.defaults.baseURL = process.env.REACT_APP_DEV === "true" ? process.env.REACT_APP_PROXY_DEV : process.env.REACT_APP_PROXY_DEPLOY
@@ -19,6 +20,11 @@ function App() {
   }
   return (
     <div>
+      <Helmet>
+          <meta charSet="utf-8" />
+          <title>RCTS-Speech-Recorder</title>
+          <link rel="canonical" href="speech-recorder.rcts.iiit.ac.in" />
+      </Helmet>
       <div style={{justifyContent:"center",display: 'flex',alignItems:'center'}}>
         <a href={'https://rcts.iiit.ac.in/'}>
           <img src={RCTS_logo} style={{maxWidth:"200px", width:"100%"}}></img>
