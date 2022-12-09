@@ -33,7 +33,7 @@ app.add_event_handler('shutdown', close_mongo_connection)
 @app.get("/get_prompt")
 async def get_prompt():
     # Randomly get a prompt from the db with len(audio_url)<1
-    cursor  =  get_db()['TextAudio'].aggregate([ { '$sample': { 'size': 1 } }]) #aggregate([ { '$match': { 'audio_url': {'$size':{'$lt':LEN_AUDIO_URL}} } }, { '$sample': { 'size': 1 } }])
+    cursor  =  get_db()['TextAudio'].aggregate([ {'$match': { 'audio_url': {'$size':LEN_AUDIO_URL}}},{ '$sample': { 'size': 1 } }]) #aggregate([ { '$match': { 'audio_url': {'$size':{'$lt':LEN_AUDIO_URL}} } }, { '$sample': { 'size': 1 } }])
     async for doc in cursor:
         res = json.loads(json_util.dumps(doc))
     return res
